@@ -43,4 +43,51 @@ describe('PostsService', () => {
 		expect(foundPost?.id).toBe(newPost.id)
 		expect(foundPost?.text).toBe(newPost.text)
 	})
+
+	it('should return the correct number of posts with limit', () => {
+		postsService.create({ text: 'Post 1' })
+		postsService.create({ text: 'Post 2' })
+		postsService.create({ text: 'Post 3' })
+
+		const posts = postsService.findMany({ limit: 2 })
+		expect(posts.length).toBe(2)
+	})
+
+	it('should skip the correct number of posts', () => {
+		postsService.create({ text: 'Post 1' })
+		postsService.create({ text: 'Post 2' })
+		postsService.create({ text: 'Post 3' })
+
+		const posts = postsService.findMany({ skip: 1 })
+		expect(posts.length).toBe(3)
+		expect(posts[0].text).toBe('Post 1')
+	})
+
+	it('should skip and limit posts correctly', () => {
+		postsService.create({ text: 'Post 1' })
+		postsService.create({ text: 'Post 2' })
+		postsService.create({ text: 'Post 3' })
+		postsService.create({ text: 'Post 4' })
+
+		const posts = postsService.findMany({ skip: 1, limit: 2 })
+		expect(posts.length).toBe(2)
+		expect(posts[0].text).toBe('Post 1')
+		expect(posts[1].text).toBe('Post 2')
+	})
+
+	it('should return all posts if limit and skip are not provided', () => {
+		postsService.create({ text: 'Post 1' })
+		postsService.create({ text: 'Post 2' })
+
+		const posts = postsService.findMany()
+		expect(posts.length).toBe(3)
+	})
+
+	it('should return an empty array if skip exceeds number of posts', () => {
+		postsService.create({ text: 'Post 1' })
+		postsService.create({ text: 'Post 2' })
+
+		const posts = postsService.findMany({ skip: 10 })
+		expect(posts.length).toBe(0)
+	})
 })
